@@ -130,18 +130,18 @@ const InvoiceCard = ({ invoice, onDelete }) => {
         <div className="mb-4">
           <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
             <span>Confidence Score</span>
-            <span className="font-medium">{Math.round(firstInvoice.confidence_score)}%</span>
+            <span className="font-medium">{Math.round(firstInvoice.confidence_score * 100)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${
-                firstInvoice.confidence_score >= 80
+                firstInvoice.confidence_score * 100 >= 80
                   ? 'bg-green-500'
-                  : firstInvoice.confidence_score >= 60
+                  : firstInvoice.confidence_score * 100 >= 60
                   ? 'bg-yellow-500'
                   : 'bg-red-500'
               }`}
-              style={{ width: `${firstInvoice.confidence_score}%` }}
+              style={{ width: `${Math.round(firstInvoice.confidence_score * 100)}%` }}
             />
           </div>
         </div>
