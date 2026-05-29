@@ -27,7 +27,10 @@ async def analyze_document(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        # Optional: clean up file after processing
-        # if os.path.exists(file_path):
-        #     os.remove(file_path)
-        pass
+        # Clean up file after processing to prevent storage bloat
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                import logging
+                logging.getLogger("uvicorn").warning(f"Failed to delete temp file {file_path}: {e}")

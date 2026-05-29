@@ -102,28 +102,38 @@ def compute_invoice_confidence(
     ocr_avg_conf: float,
 ) -> float:
     """Weighted average confidence score for the whole invoice."""
-    weights = {
+    # Mandatory fields
+    mandatory_weights = {
         "invoice_number": 2.0,
         "seller_name": 1.5,
         "buyer_name": 1.5,
         "issue_date": 1.0,
-        "currency": 1.0,
-        "subtotal": 2.0,
+        "subtotal": 1.0,
         "total_amount": 2.0,
+    }
+    # Optional fields
+    optional_weights = {
+        "currency": 1.0,
         "tax_amount": 1.0,
         "discount_amount": 0.5,
         "payment_terms_days": 0.5,
     }
 
     total_w, weighted_sum = 0.0, 0.0
-    for field_name, w in weights.items():
+    for field_name, w in mandatory_weights.items():
         conf = fields_confidence.get(field_name, 0.0)
         weighted_sum += conf * w
         total_w += w
 
+    for field_name, w in optional_weights.items():
+        if field_name in fields_confidence:
+            conf = fields_confidence.get(field_name, 0.0)
+            weighted_sum += conf * w
+            total_w += w
+
     # Penalise if no line items extracted
     if not line_items:
-        weighted_sum *= 0.7
+        weighted_sum *= 0.8
 
     base = weighted_sum / total_w if total_w > 0 else 0.0
     # Blend with raw OCR confidence

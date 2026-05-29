@@ -15,7 +15,7 @@ log = get_logger("FIELD EXTRACTION")
 # ── Regex patterns ────────────────────────────────────────────────────────────
 
 INVOICE_NUMBER_RE = re.compile(
-    r"(?i)(?:invoice|inv)[\s#:\-]*([A-Z0-9][\w\-/]{2,})"
+    r"(?i)(?:invoice|inv)[\s#:\-]*\[?([A-Z0-9][\w\-/]{2,})\]?"
 )
 
 DATE_LABEL_RE = re.compile(
@@ -33,26 +33,26 @@ CURRENCY_CODE_RE = re.compile(
 CURRENCY_SYMBOL_RE = re.compile(r"([$€£₹])")
 
 SUBTOTAL_RE = re.compile(
-    r"(?i)(?:subtotal|sub[\s\-]total)[:\s]*([\d,]+\.?\d{0,2})"
+    r"(?i)(?:subtotal|sub[\s\-]total)[^\d\n]*([\d,]+\.?\d{0,2})"
 )
 
 TAX_RE = re.compile(
-    r"(?i)(?:tax|vat|gst|hst)[^:\n]*[:\s]*([\d,]+\.?\d{0,2})"
+    r"(?i)(?:tax|vat|gst|hst)[^\d\n]*([\d,]+\.?\d{0,2})"
 )
 
 # Sub-component tax labels (Indian GST and similar regimes). We match all
 # occurrences and sum them — a single invoice can have CGST + SGST + Cess
 # rows or an IGST row, and tax_amount should reflect the total tax burden.
 MULTI_TAX_RE = re.compile(
-    r"(?i)\b(cgst|sgst|igst|utgst|cess)\b[^:\n]*[:\s]*([\d,]+\.?\d{0,2})"
+    r"(?i)\b(cgst|sgst|igst|utgst|cess)\b[^\d\n]*([\d,]+\.?\d{0,2})"
 )
 
 DISCOUNT_RE = re.compile(
-    r"(?i)discount[^:]*[:\s]*([\d,]+\.?\d{0,2})"
+    r"(?i)discount[^\d\n]*([\d,]+\.?\d{0,2})"
 )
 
 TOTAL_RE = re.compile(
-    r"(?i)(?:total\s+amount|amount\s+due|grand\s+total|total)[:\s]*([\d,]+\.?\d{0,2})"
+    r"(?i)(?:total\s+amount|amount\s+due|grand\s+total|total)[^\d\n]*([\d,]+\.?\d{0,2})"
 )
 
 PAYMENT_TERMS_RE = re.compile(
